@@ -1,4 +1,4 @@
-import { Server } from 'boardgame.io/dist/esm/server';
+import { Server } from 'boardgame.io/dist/cjs/server.js';
 import { KingzGame } from '../src/game/KingzGame.js';
 
 const server = Server({
