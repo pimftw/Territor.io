@@ -1,13 +1,45 @@
-import { INVALID_MOVE } from 'boardgame.io/core';
+import { INVALID_MOVE } from 'boardgame.io/dist/cjs/core.js';
+import type { Game, Ctx, PlayerID } from 'boardgame.io';
+
+// Types
+interface Powerup {
+  type: 'speed' | 'strength' | 'range' | 'shield' | 'bomb';
+  duration: number;
+  active?: boolean;
+}
+
+interface PowerupEffect {
+  duration: number;
+  description: string;
+}
+
+interface Player {
+  id: PlayerID;
+  x: number;
+  y: number;
+  territory: Set<string>;
+  army: number;
+  powerups: Powerup[];
+  moveQueue: string[];
+  color: string;
+}
+
+interface GameState {
+  players: Record<PlayerID, Player>;
+  powerups: Record<string, Powerup & { x: number; y: number }>;
+  turn: number;
+  gameOver: boolean;
+  winner: PlayerID | null;
+}
 
 // Game constants
 const BOARD_SIZE = 50;
 const TURN_TIME = 1000; // 1 second per turn
 const POWERUP_SPAWN_RATE = 0.02; // 2% chance per turn
-const POWERUP_TYPES = ['speed', 'strength', 'range', 'shield', 'bomb'];
+const POWERUP_TYPES = ['speed', 'strength', 'range', 'shield', 'bomb'] as const;
 
 // Powerup effects
-const POWERUP_EFFECTS = {
+const POWERUP_EFFECTS: Record<string, PowerupEffect> = {
   speed: { duration: 5, description: 'Move 2 tiles per turn' },
   strength: { duration: 3, description: 'Capture 2x faster' },
   range: { duration: 4, description: 'Attack from 2 tiles away' },
@@ -15,12 +47,12 @@ const POWERUP_EFFECTS = {
   bomb: { duration: 1, description: 'Destroy adjacent tiles' }
 };
 
-export const KingzGame = {
+export const KingzGame: Game<GameState> = {
   name: 'kingzio',
   
-  setup: (ctx) => {
-    const players = {};
-    const powerups = {};
+  setup: (ctx: Ctx): GameState => {
+    const players: Record<PlayerID, Player> = {} as Record<PlayerID, Player>;
+    const powerups: Record<string, Powerup & { x: number; y: number }> = {};
     
     // Initialize players
     for (let i = 0; i < ctx.numPlayers; i++) {
@@ -28,7 +60,7 @@ export const KingzGame = {
       const startY = i === 1 ? 5 : BOARD_SIZE - 5;
       
       players[i] = {
-        id: i,
+        id: i.toString() as PlayerID,
         x: startX,
         y: startY,
         territory: new Set([`${startX},${startY}`]),
@@ -69,7 +101,7 @@ export const KingzGame = {
           }
         }
       },
-      onTurnEnd: (G, ctx) => {
+      onTurnEnd: (G: GameState, ctx: Ctx) => {
         // Process move queue
         processMoveQueue(G, ctx);
         
@@ -87,7 +119,7 @@ export const KingzGame = {
     }
   },
 
-  endIf: (G, ctx) => {
+  endIf: (G: GameState, ctx: Ctx) => {
     if (G.gameOver) {
       return { winner: G.winner };
     }
@@ -95,7 +127,7 @@ export const KingzGame = {
 };
 
 // Move functions
-function movePlayer(G, ctx, direction) {
+function movePlayer(G: GameState, ctx: Ctx, direction: string) {
   const player = G.players[ctx.currentPlayer];
   const { x, y } = player;
   
@@ -129,13 +161,13 @@ function movePlayer(G, ctx, direction) {
   return { move: direction };
 }
 
-function queueMove(G, ctx, direction) {
+function queueMove(G: GameState, ctx: Ctx, direction: string) {
   const player = G.players[ctx.currentPlayer];
   player.moveQueue.push(direction);
   return { move: 'queued' };
 }
 
-function usePowerup(G, ctx, powerupIndex) {
+function usePowerup(G: GameState, ctx: Ctx, powerupIndex: number) {
   const player = G.players[ctx.currentPlayer];
   
   if (powerupIndex >= player.powerups.length) {
@@ -170,30 +202,32 @@ function usePowerup(G, ctx, powerupIndex) {
 }
 
 // Helper functions
-function processMoveQueue(G, ctx) {
+function processMoveQueue(G: GameState, ctx: Ctx) {
   Object.values(G.players).forEach(player => {
     if (player.moveQueue.length > 0) {
       const direction = player.moveQueue.shift();
-      const { x, y } = player;
-      
-      let newX = x;
-      let newY = y;
-      
-      switch (direction) {
-        case 'up': newY = Math.max(0, y - 1); break;
-        case 'down': newY = Math.min(BOARD_SIZE - 1, y + 1); break;
-        case 'left': newX = Math.max(0, x - 1); break;
-        case 'right': newX = Math.min(BOARD_SIZE - 1, x + 1); break;
+      if (direction) {
+        const { x, y } = player;
+        
+        let newX = x;
+        let newY = y;
+        
+        switch (direction) {
+          case 'up': newY = Math.max(0, y - 1); break;
+          case 'down': newY = Math.min(BOARD_SIZE - 1, y + 1); break;
+          case 'left': newX = Math.max(0, x - 1); break;
+          case 'right': newX = Math.min(BOARD_SIZE - 1, x + 1); break;
+        }
+        
+        player.x = newX;
+        player.y = newY;
+        captureTerritory(G, player.id, newX, newY);
       }
-      
-      player.x = newX;
-      player.y = newY;
-      captureTerritory(G, ctx.currentPlayer, newX, newY);
     }
   });
 }
 
-function captureTerritory(G, playerId, x, y) {
+function captureTerritory(G: GameState, playerId: PlayerID, x: number, y: number) {
   const player = G.players[playerId];
   const key = `${x},${y}`;
   
@@ -214,7 +248,7 @@ function captureTerritory(G, playerId, x, y) {
   player.army += 10;
 }
 
-function spawnPowerup(G) {
+function spawnPowerup(G: GameState) {
   let attempts = 0;
   let x, y;
   
@@ -235,11 +269,11 @@ function spawnPowerup(G) {
   }
 }
 
-function isPowerupAt(G, x, y) {
+function isPowerupAt(G: GameState, x: number, y: number): boolean {
   return G.powerups[`${x},${y}`] !== undefined;
 }
 
-function updatePowerups(G, ctx) {
+function updatePowerups(G: GameState, ctx: Ctx) {
   // Update player powerups
   Object.values(G.players).forEach(player => {
     player.powerups.forEach(powerup => {
@@ -270,8 +304,8 @@ function updatePowerups(G, ctx) {
   });
 }
 
-function getAdjacentTiles(x, y) {
-  const adjacent = [];
+function getAdjacentTiles(x: number, y: number): [number, number][] {
+  const adjacent: [number, number][] = [];
   for (let dx = -1; dx <= 1; dx++) {
     for (let dy = -1; dy <= 1; dy++) {
       if (dx === 0 && dy === 0) continue;
@@ -285,7 +319,7 @@ function getAdjacentTiles(x, y) {
   return adjacent;
 }
 
-function checkWinConditions(G, ctx) {
+function checkWinConditions(G: GameState, ctx: Ctx) {
   const activePlayers = Object.values(G.players).filter(p => p.territory.size > 0);
   
   if (activePlayers.length === 1) {

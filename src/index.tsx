@@ -12,12 +12,14 @@ const KingzClient = Client({
   debug: false,
 });
 
-const App = () => {
+const App: React.FC = () => {
   // Get the current hostname and port for dynamic server configuration
   const protocol = window.location.protocol;
   const hostname = window.location.hostname;
-  const port = window.location.port || (protocol === 'https:' ? '443' : '80');
-  const serverUrl = `${protocol}//${hostname}:${port}`;
+  const isProduction = hostname.includes('vercel.app');
+  const serverUrl = isProduction
+    ? `${protocol}//${hostname}/api`  // Use /api path in production
+    : `${protocol}//${hostname}:8000`; // Use port 8000 in development
 
   return (
     <div className="app">
@@ -31,5 +33,8 @@ const App = () => {
 };
 
 // Start the app
-const root = createRoot(document.getElementById('root'));
-root.render(<App />); 
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  const root = createRoot(rootElement);
+  root.render(<App />);
+} 

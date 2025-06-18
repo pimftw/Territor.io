@@ -1,14 +1,51 @@
 import React, { useState, useEffect } from 'react';
+import type { BoardProps } from 'boardgame.io/react';
 
 const BOARD_SIZE = 50;
 const CELL_SIZE = 12; // pixels
 
-export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
+interface Powerup {
+  type: 'speed' | 'strength' | 'range' | 'shield' | 'bomb';
+  duration: number;
+  active?: boolean;
+}
+
+interface Player {
+  id: string;
+  x: number;
+  y: number;
+  territory: Set<string>;
+  army: number;
+  powerups: Powerup[];
+  moveQueue: string[];
+  color: string;
+}
+
+interface GameState {
+  players: Record<string, Player>;
+  powerups: Record<string, Powerup & { x: number; y: number }>;
+  turn: number;
+  gameOver: boolean;
+  winner: string | null;
+}
+
+interface Moves {
+  movePlayer: (direction: string) => void;
+  queueMove: (direction: string) => void;
+  usePowerup: (index: number) => void;
+}
+
+export const KingzBoard: React.FC<BoardProps<GameState>> = ({ G, ctx, moves, playerID, isActive }) => {
+  const [mousePos, setMousePos] = useState<MousePosition>({ x: 0, y: 0 });
 
   // Handle keyboard input
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: KeyboardEvent) => {
       if (!G.gameOver && isActive) {
         switch (e.key.toLowerCase()) {
           case 'w':
@@ -48,7 +85,7 @@ export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
   }, [moves, G.gameOver, playerID, G.players, isActive]);
 
   // Handle mouse movement
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
     const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
@@ -56,12 +93,12 @@ export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
   };
 
   // Handle mouse click for movement
-  const handleMouseClick = (e) => {
-    if (G.gameOver || !G.players[playerID] || !isActive) return;
+  const handleMouseClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (G.gameOver || !G.players[playerID!] || !isActive) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = Math.floor((e.clientX - rect.left) / CELL_SIZE);
     const clickY = Math.floor((e.clientY - rect.top) / CELL_SIZE);
-    const player = G.players[playerID];
+    const player = G.players[playerID!];
     const dx = clickX - player.x;
     const dy = clickY - player.y;
     // Determine direction based on click position
@@ -75,7 +112,7 @@ export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
   };
 
   // Get cell color based on territory ownership
-  const getCellColor = (x, y) => {
+  const getCellColor = (x: number, y: number): string => {
     const key = `${x},${y}`;
     // Check if there's a powerup
     if (G.powerups[key]) {
@@ -90,8 +127,8 @@ export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
     return '#333'; // Neutral territory
   };
 
-  const getPowerupColor = (type) => {
-    const colors = {
+  const getPowerupColor = (type: string): string => {
+    const colors: Record<string, string> = {
       speed: '#ffff00',
       strength: '#ff8800',
       range: '#8800ff',
@@ -101,8 +138,8 @@ export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
     return colors[type] || '#ffffff';
   };
 
-  const getPowerupIcon = (type) => {
-    const icons = {
+  const getPowerupIcon = (type: string): string => {
+    const icons: Record<string, string> = {
       speed: '⚡',
       strength: '💪',
       range: '🎯',
@@ -114,7 +151,7 @@ export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
 
   // Render game board
   const renderBoard = () => {
-    const cells = [];
+    const cells: JSX.Element[] = [];
     for (let y = 0; y < BOARD_SIZE; y++) {
       for (let x = 0; x < BOARD_SIZE; x++) {
         const isPlayerHere = Object.values(G.players).some(p => p.x === x && p.y === y);
@@ -172,8 +209,8 @@ export const KingzBoard = ({ G, ctx, moves, playerID, isActive }) => {
 
   // Render controls
   const renderControls = () => {
-    if (!G.players[playerID]) return null;
-    const player = G.players[playerID];
+    if (!G.players[playerID!]) return null;
+    const player = G.players[playerID!];
     return (
       <div className="controls">
         <h3>Controls</h3>
