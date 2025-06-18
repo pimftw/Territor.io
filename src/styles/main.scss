@@ -1,0 +1,407 @@
+// Variables
+$primary-color: #2c3e50;
+$secondary-color: #3498db;
+$accent-color: #e74c3c;
+$background-color: #1a1a1a;
+$text-color: #ecf0f1;
+$border-color: #34495e;
+
+// Global styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, $background-color 0%, #2c3e50 100%);
+  color: $text-color;
+  min-height: 100vh;
+  overflow-x: auto;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// Game board styles
+.kingz-board {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.game-container {
+  display: flex;
+  gap: 20px;
+  max-width: 1400px;
+  width: 100%;
+}
+
+.board-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.board {
+  position: relative;
+  background: #000;
+  border: 2px solid $border-color;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.cell {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+  
+  &.player {
+    border: 2px solid white;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    z-index: 10;
+  }
+  
+  &.hovered {
+    transform: scale(1.1);
+    z-index: 5;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+}
+
+.player-indicator {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.powerup-indicator {
+  font-size: 10px;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.8));
+}
+
+// Sidebar styles
+.sidebar {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.player-info-container,
+.controls-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.player-info {
+  border-left: 4px solid;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  h3 {
+    margin-bottom: 10px;
+    color: $secondary-color;
+    font-size: 1.2em;
+  }
+  
+  p {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    opacity: 0.9;
+  }
+  
+  .powerups {
+    margin-top: 10px;
+    
+    h4 {
+      margin-bottom: 8px;
+      color: $accent-color;
+      font-size: 0.9em;
+    }
+    
+    .powerup-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+      padding: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      font-size: 0.8em;
+    }
+  }
+}
+
+// Controls styles
+.controls {
+  h3 {
+    margin-bottom: 15px;
+    color: $secondary-color;
+    font-size: 1.2em;
+  }
+  
+  p {
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    opacity: 0.9;
+  }
+  
+  .move-queue {
+    margin: 15px 0;
+    
+    h4 {
+      margin-bottom: 8px;
+      color: $accent-color;
+      font-size: 0.9em;
+    }
+    
+    .queued-move {
+      display: inline-block;
+      background: $secondary-color;
+      color: white;
+      padding: 3px 8px;
+      margin: 2px;
+      border-radius: 3px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+  }
+  
+  .powerup-controls {
+    h4 {
+      margin-bottom: 10px;
+      color: $accent-color;
+      font-size: 0.9em;
+    }
+    
+    .powerup-button {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        background: darken($secondary-color, 10%);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// Game over styles
+.game-over {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  
+  h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: $accent-color;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  h2 {
+    font-size: 2em;
+    margin-bottom: 30px;
+    color: $secondary-color;
+  }
+  
+  button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    background: $secondary-color;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    
+    &:hover {
+      background: darken($secondary-color, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+// Lobby styles
+.bgio-lobby {
+  background: transparent !important;
+  
+  .bgio-lobby__header {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid $border-color;
+  }
+  
+  .bgio-lobby__content {
+    background: transparent !important;
+  }
+  
+  .bgio-lobby__game-instance {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    margin: 10px;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.4) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+  }
+  
+  .bgio-lobby__button {
+    background: $secondary-color !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 5px !important;
+    
+    &:hover {
+      background: darken($secondary-color, 10%) !important;
+    }
+  }
+  
+  .bgio-lobby__input {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid $border-color !important;
+    color: $text-color !important;
+    border-radius: 5px !important;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sidebar {
+    width: 100%;
+    max-width: 600px;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .player-info-container,
+  .controls-container {
+    flex: 1;
+    margin: 0 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .kingz-board {
+    padding: 10px;
+  }
+  
+  .board-container {
+    padding: 10px;
+  }
+  
+  .sidebar {
+    flex-direction: column;
+  }
+  
+  .player-info-container,
+  .controls-container {
+    margin: 0 0 10px 0;
+  }
+  
+  .game-over {
+    h1 {
+      font-size: 2em;
+    }
+    
+    h2 {
+      font-size: 1.5em;
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+}
+
+.cell.player {
+  animation: pulse 2s infinite;
+}
+
+.powerup-indicator {
+  animation: glow 1.5s infinite;
+} 
