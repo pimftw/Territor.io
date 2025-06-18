@@ -1,4 +1,4 @@
-const { Server } = require('boardgame.io/server');
+const { Server } = require('boardgame.io/dist/cjs/server.js');
 const { KingzGame } = require('../src/game/KingzGame.js');
 
 const server = Server({
