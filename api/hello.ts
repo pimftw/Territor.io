@@ -1,41 +1,36 @@
-import Koa from 'koa';
-import Router from 'koa-router';
-import cors from 'koa-cors';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const app = new Koa();
-const router = new Router();
+export default function handler(req: VercelRequest, res: VercelResponse) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-// Enable CORS
-app.use(cors());
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-// Hello world endpoint
-router.get('/api/hello', async (ctx: Koa.Context) => {
-  ctx.body = {
-    message: 'Hello World from Koa API!',
-    timestamp: new Date().toISOString()
-  };
-});
+  // Handle different API routes
+  const { pathname } = new URL(req.url || '', `http://${req.headers.host}`);
 
-// Health check endpoint
-router.get('/api/health', async (ctx: Koa.Context) => {
-  ctx.body = {
-    status: 'ok',
-    timestamp: new Date().toISOString()
-  };
-});
+  if (pathname === '/api/hello') {
+    res.status(200).json({
+      message: 'Hello World from Koa API!',
+      timestamp: new Date().toISOString()
+    });
+    return;
+  }
 
-app.use(router.routes());
-app.use(router.allowedMethods());
+  if (pathname === '/api/health') {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString()
+    });
+    return;
+  }
 
-// Start server if this file is run directly
-if (require.main === module) {
-  const port = process.env.PORT || 8000;
-  app.listen(port, () => {
-    console.log(`🚀 Koa API server running on http://localhost:${port}`);
-    console.log(`📡 API endpoints:`);
-    console.log(`   GET http://localhost:${port}/api/hello`);
-    console.log(`   GET http://localhost:${port}/api/health`);
-  });
-}
-
-export default app; 
+  // Default response for unknown routes
+  res.status(404).json({ error: 'Not found' });
+} 
