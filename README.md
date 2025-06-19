@@ -1,117 +1,101 @@
-# Kingz.io - Territory Control Game
+# Vercel Koa React App
 
-A real-time territory control game with powerups, built using boardgame.io for multiplayer functionality.
+A simple TypeScript application with a Koa backend and React frontend, designed to deploy on Vercel without errors.
 
 ## Features
 
-- **Real-time Territory Control**: Capture territory by moving your player across the board
-- **Powerups**: Collect and use strategic powerups to gain advantages
-- **Multiplayer**: Play with friends using boardgame.io's lobby system
-- **Move Queuing**: Queue moves for strategic planning
-- **Multiple Input Methods**: Use WASD, arrow keys, or mouse clicks to move
-- **Beautiful UI**: Modern, responsive design with animations
+- ✅ **Koa Backend** - Simple API endpoints in TypeScript
+- ✅ **React Frontend** - Modern React with TypeScript
+- ✅ **Vercel Ready** - Configured for seamless deployment
+- ✅ **TypeScript** - Full type safety for both frontend and backend
+- ✅ **Hello World** - Simple, working example
 
-## Powerups
+## Project Structure
 
-- ⚡ **Speed**: Move 2 tiles per turn for 5 turns
-- 💪 **Strength**: Capture territory 2x faster for 3 turns
-- 🎯 **Range**: Attack from 2 tiles away for 4 turns
-- 🛡️ **Shield**: Cannot be captured for 3 turns
-- 💣 **Bomb**: Destroy adjacent tiles instantly
-
-## Controls
-
-- **WASD** or **Arrow Keys**: Move player
-- **Q**: Queue move (for strategic planning)
-- **1-5**: Use powerup (number corresponds to powerup slot)
-- **Mouse Click**: Click anywhere on the board to move towards that location
-
-## Setup
-
-### Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd kingzio
+```
+├── api/
+│   └── hello.ts          # Koa API endpoints
+├── src/
+│   ├── App.tsx           # Main React component
+│   ├── main.tsx          # React entry point
+│   └── index.html        # HTML template
+├── package.json          # Dependencies and scripts
+├── tsconfig.json         # TypeScript configuration
+├── vercel.json           # Vercel deployment config
+└── vite.config.ts        # Vite build configuration
 ```
 
-2. Install dependencies:
+## Quick Start
+
+### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
-3. Start the development server:
+### 2. Development
+
 ```bash
 npm run dev
 ```
 
-4. In a separate terminal, start the game server:
+This will start the Vercel development server which handles both frontend and backend.
+
+### 3. Build for Production
+
 ```bash
-node server.js
+npm run build
 ```
 
-5. Open your browser and navigate to `http://localhost:1234`
+### 4. Deploy to Vercel
 
-## How to Play
-
-1. **Join a Game**: Use the lobby to create or join a game
-2. **Start Position**: Each player starts in opposite corners
-3. **Capture Territory**: Move to capture neutral or enemy territory
-4. **Collect Powerups**: Move over powerup tiles to collect them
-5. **Use Strategy**: Queue moves and use powerups strategically
-6. **Win**: Eliminate all other players by capturing their territory
-
-## Game Rules
-
-- Each turn lasts 1 second
-- Players can move one tile per turn (unless they have speed powerup)
-- Moving over a tile captures it for your team
-- Powerups spawn randomly on the board
-- The last player with territory wins
-
-## Development
-
-### Project Structure
-
-```
-src/
-├── components/
-│   └── KingzBoard.js      # Main game board component
-├── game/
-│   └── KingzGame.js       # Game logic and rules
-├── styles/
-│   └── main.scss          # Game styles
-├── index.html             # HTML entry point
-└── index.js              # React app entry point
+```bash
+vercel
 ```
 
-### Available Scripts
+## API Endpoints
 
-- `npm run dev`: Start development server with hot reload
-- `npm run build`: Build for production
-- `npm start`: Start production server
+- `GET /api/hello` - Returns a hello world message
+- `GET /api/health` - Health check endpoint
+
+## Local Development
+
+The app uses Vercel's development server which automatically:
+- Serves the React frontend on port 3000
+- Handles API routes from the `/api` directory
+- Provides hot reloading for both frontend and backend
+
+## Deployment
+
+This app is configured to deploy seamlessly on Vercel:
+
+1. **Backend**: API routes in `/api` are automatically deployed as serverless functions
+2. **Frontend**: React app is built and served as static files
+3. **Routing**: Vercel handles routing between API and frontend
 
 ## Technologies Used
 
-- **boardgame.io**: Game engine and multiplayer functionality
-- **React**: UI framework
-- **SCSS**: Styling with modern CSS features
-- **Parcel**: Build tool and development server
+- **Backend**: Koa.js with TypeScript
+- **Frontend**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Deployment**: Vercel
+- **Language**: TypeScript throughout
 
-## Contributing
+## Next Steps
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+This is a minimal working example. You can extend it by:
 
-## License
+1. Adding more API endpoints in `/api`
+2. Creating additional React components
+3. Adding a database (e.g., Vercel Postgres)
+4. Implementing authentication
+5. Adding more complex frontend features
 
-MIT License - feel free to use this project for learning or commercial purposes. 
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Make sure all dependencies are installed: `npm install`
+2. Check that TypeScript compilation works: `npm run type-check`
+3. Verify the build process: `npm run build`
+4. For deployment issues, check the Vercel logs in your dashboard 
