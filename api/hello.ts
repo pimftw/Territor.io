@@ -27,4 +27,15 @@ router.get('/api/health', async (ctx: Koa.Context) => {
 app.use(router.routes());
 app.use(router.allowedMethods());
 
+// Start server if this file is run directly
+if (require.main === module) {
+  const port = process.env.PORT || 8000;
+  app.listen(port, () => {
+    console.log(`🚀 Koa API server running on http://localhost:${port}`);
+    console.log(`📡 API endpoints:`);
+    console.log(`   GET http://localhost:${port}/api/hello`);
+    console.log(`   GET http://localhost:${port}/api/health`);
+  });
+}
+
 export default app; 

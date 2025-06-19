@@ -4,10 +4,11 @@
   "description": "Basic Vercel app with Koa backend and React frontend",
   "main": "index.js",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "vite",
     "build": "tsc && vite build",
     "start": "node dist/server.js",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "vercel-dev": "vercel dev"
   },
   "dependencies": {
     "koa": "^2.15.0",
